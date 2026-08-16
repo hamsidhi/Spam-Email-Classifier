@@ -18,6 +18,7 @@
 
 ## 📌 Table of Contents
 - [📖 Project Overview](#-project-overview)
+- [📘 Detailed Step-by-Step User Guide (USAGE_GUIDE.md)](USAGE_GUIDE.md)
 - [⚠️ Important Scope Clarification](#️-important-scope-clarification)
 - [✨ Key Features](#-key-features)
 - [🏗️ System Architecture](#️-system-architecture)
