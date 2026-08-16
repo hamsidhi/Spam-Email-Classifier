@@ -307,3 +307,31 @@ The **Grand Line Message Bounty Detector** successfully establishes an understan
 2. **Dataset Authors:** Tiago A. Almeida and José María Gómez Hidalgo.
 3. **Scikit-Learn Documentation:** Working with Text Data & Pipelines.  
    URL: [https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html](https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html)
+
+---
+
+## 30. One Piece Theme Code Mapping & Terminology Dictionary
+
+To ensure complete clarity and accessibility for code reviewers and recruiters, the table below documents the exact mapping between the *One Piece* themed identifiers used in the Python source code (`src/train_model.py` & `src/predict_message.py`) and standard machine learning / Python terminology:
+
+| Themed Code Identifier | Standard Technical / ML Concept | Technical Explanation & Rationale |
+|---|---|---|
+| `grand_line_root` | Project Root Directory (`Path`) | Resolves the root workspace folder relative to the script location. |
+| `bounty_dataset_path` | Dataset File Path (`SMSSpamCollection`) | Points to `data/SMSSpamCollection` tab-separated text dataset. |
+| `inspect_bounty_scrolls()` | `load_and_validate_data()` | Function that reads tab-separated data, checks nulls, and prints class balance. |
+| `scrolls_df` | `pandas.DataFrame` | The tabular DataFrame holding `label` and `message` columns. |
+| `grand_line_messages` | `X` (Feature Series) | pandas Series containing raw text messages. |
+| `bounty_labels` | `y` (Target Series) | pandas Series containing `ham` or `spam` classification targets. |
+| `crew_train_messages`, `crew_test_messages` | `X_train`, `X_test` | The 80% training and 20% testing message feature splits. |
+| `crew_train_labels`, `crew_test_labels` | `y_train`, `y_test` | The 80% training and 20% testing target label splits. |
+| `devil_fruit_vectorizer` | `TfidfVectorizer` | TF-IDF transformer converting raw text into numerical feature vectors. |
+| `marine_classifier` | `MultinomialNB` | Probabilistic Naive Bayes classifier estimating posterior class probabilities. |
+| `marine_spam_pipeline` | `sklearn.pipeline.Pipeline` | Unified scikit-learn pipeline coupling vectorizer and classifier. |
+| `train_marine_fleet_pipeline()` | `train_pipeline()` | Function constructing and fitting the pipeline strictly on training data. |
+| `evaluate_battle_results()` | `evaluate_model()` | Function computing Accuracy, Precision, Recall, F1, and Confusion Matrix. |
+| `save_marine_den_den_mushi()` | `joblib.dump()` | Serializes the trained pipeline artifact to `models/spam_message_pipeline.joblib`. |
+| `load_marine_pipeline()` | `joblib.load()` | Loads serialized pipeline binary for interactive inference. |
+| `inspect_message()` | `predict_message()` | Function predicting label and probability for new text input strings. |
+| `[CREW MESSAGE]` | Class `ham` (Legitimate) | Presentation tag for legitimate non-spam messages. |
+| `[MARINE ALERT]` | Class `spam` (Spam/Scam) | Presentation tag for unwanted spam or fraudulent notices. |
+

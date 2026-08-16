@@ -1,8 +1,8 @@
 """
-Grand Line Message Bounty Detector — Spam Message Classifier
+Grand Line Message Bounty Detector — One Piece Anime Themed Spam Classifier
 Script: train_model.py
-Description: Trains a baseline SMS spam classifier using a TF-IDF vectorizer
-             and Multinomial Naive Bayes pipeline on the UCI SMS Spam Collection dataset.
+Description: Trains a Marine Spam Classifier using a Devil Fruit TF-IDF Vectorizer
+             and Naive Bayes pipeline on the Grand Line SMS message dataset.
 """
 
 import sys
@@ -23,201 +23,198 @@ from sklearn.metrics import (
 import joblib
 
 
-def get_project_paths():
+def locate_grand_line_paths():
     """
-    Resolves project directories dynamically relative to this script's location.
-    Ensures seamless execution on Windows across different working directories.
+    Locates project root and target file paths relative to script location.
+    Works seamlessly across Windows PowerShell sessions.
     """
-    script_dir = Path(__file__).resolve().parent
-    project_root = script_dir.parent
-    data_path = project_root / "data" / "SMSSpamCollection"
-    models_dir = project_root / "models"
-    model_save_path = models_dir / "spam_message_pipeline.joblib"
+    script_location = Path(__file__).resolve().parent
+    grand_line_root = script_location.parent
+    bounty_dataset_path = grand_line_root / "data" / "SMSSpamCollection"
+    marine_hq_models_dir = grand_line_root / "models"
+    saved_pipeline_path = marine_hq_models_dir / "spam_message_pipeline.joblib"
     
-    return project_root, data_path, models_dir, model_save_path
+    return grand_line_root, bounty_dataset_path, marine_hq_models_dir, saved_pipeline_path
 
 
-def load_and_inspect_dataset(data_path):
+def inspect_bounty_scrolls(bounty_dataset_path):
     """
-    Loads tab-separated SMS spam dataset, validates columns, checks for missing data,
-    and displays fundamental dataset characteristics.
+    Loads tab-separated SMS dataset, checks for missing data,
+    and displays message distributions.
     """
-    print("\n" + "=" * 60)
-    print("      GRAND LINE MARINE INTELLIGENCE — DATASET LOADING      ")
-    print("=" * 60)
+    print("\n" + "=" * 65)
+    print("      GRAND LINE MARINE HEADQUARTERS — BOUNTY SCROLL LOADING      ")
+    print("=" * 65)
     
-    # 1. Verify dataset existence
-    if not data_path.exists():
-        print(f"\n[ERROR] Dataset file missing at target path: {data_path}")
-        print("[INSTRUCTION] Please manually place 'SMSSpamCollection' in the data/ folder.")
-        print("              Refer to data/README.md for download instructions.\n")
+    # 1. Verify dataset file existence
+    if not bounty_dataset_path.exists():
+        print(f"\n[ERROR] Bounty scroll missing at target path: {bounty_dataset_path}")
+        print("[INSTRUCTION] Please place 'SMSSpamCollection' inside data/ directory.")
+        print("              Refer to data/README.md for download steps.\n")
         sys.exit(1)
         
-    print(f"[INFO] Found dataset file at: {data_path}")
+    print(f"[INFO] Found bounty message scroll at: {bounty_dataset_path}")
     
-    # 2. Load tab-separated file with fallback encoding
+    # 2. Read dataset with fallback encoding
     try:
-        df = pd.read_csv(
-            data_path,
+        scrolls_df = pd.read_csv(
+            bounty_dataset_path,
             sep="\t",
             header=None,
             names=["label", "message"],
             encoding="utf-8"
         )
     except UnicodeDecodeError:
-        print("[WARN] UTF-8 decoding issue encountered. Retrying with 'latin-1' encoding...")
-        df = pd.read_csv(
-            data_path,
+        print("[WARN] UTF-8 encoding issue detected. Retrying with 'latin-1' encoding...")
+        scrolls_df = pd.read_csv(
+            bounty_dataset_path,
             sep="\t",
             header=None,
             names=["label", "message"],
             encoding="latin-1"
         )
 
-    # 3. Inspect dataset properties
-    total_rows = len(df)
-    print(f"[INFO] Total raw messages loaded: {total_rows}")
+    # 3. Display scroll statistics
+    total_scrolls = len(scrolls_df)
+    print(f"[INFO] Total bounty message scrolls loaded: {total_scrolls}")
     
-    print("\n--- First 5 Dataset Records ---")
-    print(df.head())
+    print("\n--- Preview of First 5 Bounty Message Scrolls ---")
+    print(scrolls_df.head())
     
-    missing_count = df.isnull().sum()
+    missing_scrolls = scrolls_df.isnull().sum()
     print("\n--- Missing Value Check ---")
-    print(missing_count)
+    print(missing_scrolls)
     
-    # 4. Clean missing or invalid rows if any exist
-    if missing_count.sum() > 0:
-        print("[INFO] Cleaning missing or empty text records...")
-        df = df.dropna(subset=["label", "message"])
-        print(f"[INFO] Rows remaining after cleaning: {len(df)}")
+    if missing_scrolls.sum() > 0:
+        print("[INFO] Purging corrupted message scrolls...")
+        scrolls_df = scrolls_df.dropna(subset=["label", "message"])
+        print(f"[INFO] Remaining valid message scrolls: {len(scrolls_df)}")
     else:
-        print("[INFO] Data integrity verified: No missing values found.")
+        print("[INFO] All message scrolls verified cleanly! Zero missing values.")
         
-    # 5. Label validation and distribution
-    class_counts = df["label"].value_counts()
-    print("\n--- Class Label Distribution ---")
-    for label, count in class_counts.items():
-        percentage = (count / len(df)) * 100
-        print(f"  - {label:<8}: {count:5d} ({percentage:.2f}%)")
+    # 4. Display label distribution
+    bounty_counts = scrolls_df["label"].value_counts()
+    print("\n--- Message Label Proportions ---")
+    for bounty_type, count in bounty_counts.items():
+        pct = (count / len(scrolls_df)) * 100
+        tag = "Crewmate Message (ham)" if bounty_type == "ham" else "Pirate Spam Notice (spam)"
+        print(f"  - {bounty_type:<6} ({tag}): {count:5d} ({pct:.2f}%)")
         
-    valid_labels = {"ham", "spam"}
-    dataset_labels = set(df["label"].unique())
-    if not dataset_labels.issubset(valid_labels):
-        print(f"\n[ERROR] Unexpected class labels found: {dataset_labels}. Expected only 'ham' and 'spam'.")
-        sys.exit(1)
-        
-    return df
+    return scrolls_df
 
 
-def build_and_train_pipeline(X_train, y_train):
+def train_marine_fleet_pipeline(crew_train_messages, crew_train_labels):
     """
-    Constructs and fits a scikit-learn Pipeline combining TfidfVectorizer and MultinomialNB.
-    Fitting occurs strictly on training data to prevent data leakage.
+    Builds and trains a scikit-learn Pipeline containing:
+      1. Devil Fruit Vectorizer (TfidfVectorizer)
+      2. Marine Classifier (MultinomialNB)
+    Fits strictly on training data to prevent data leakage.
     """
-    print("\n" + "=" * 60)
-    print("     GRAND LINE MARINE CLASSIFIER — PIPELINE TRAINING     ")
-    print("=" * 60)
-    print("[INFO] Initializing TF-IDF Vectorizer & Multinomial Naive Bayes Pipeline...")
+    print("\n" + "=" * 65)
+    print("    GRAND LINE MARINE CLASSIFIER — DEVIL FRUIT PIPELINE FIT    ")
+    print("=" * 65)
+    print("[INFO] Initializing Devil Fruit Vectorizer & Marine Naive Bayes Classifier...")
     
-    # Construct scikit-learn Pipeline
-    pipeline = Pipeline([
-        (
-            "vectorizer",
-            TfidfVectorizer(
-                lowercase=True,
-                strip_accents="unicode",
-                sublinear_tf=True
-            )
-        ),
-        (
-            "classifier",
-            MultinomialNB()
-        )
+    # Unified scikit-learn Pipeline
+    devil_fruit_vectorizer = TfidfVectorizer(
+        lowercase=True,
+        strip_accents="unicode",
+        sublinear_tf=True
+    )
+    marine_classifier = MultinomialNB()
+    
+    marine_spam_pipeline = Pipeline([
+        ("devil_fruit_vectorizer", devil_fruit_vectorizer),
+        ("marine_classifier", marine_classifier)
     ])
     
-    print("[INFO] Training Marine Classifier on training split...")
-    pipeline.fit(X_train, y_train)
-    print("[SUCCESS] Pipeline training complete!")
+    print("[INFO] Training Marine Fleet Pipeline on training split...")
+    marine_spam_pipeline.fit(crew_train_messages, crew_train_labels)
+    print("[SUCCESS] Marine Fleet Pipeline successfully trained!")
     
-    return pipeline
+    return marine_spam_pipeline
 
 
-def evaluate_marine_classifier(pipeline, X_test, y_test):
+def evaluate_battle_results(marine_spam_pipeline, crew_test_messages, crew_test_labels):
     """
-    Evaluates trained pipeline performance on unseen test data across standard metrics.
+    Evaluates trained pipeline performance on unseen test split.
     """
-    print("\n" + "=" * 60)
-    print("      GRAND LINE MARINE BATTLE RESULTS — MODEL EVALUATION    ")
-    print("=" * 60)
+    print("\n" + "=" * 65)
+    print("      GRAND LINE BATTLE RESULTS — PERFORMANCE EVALUATION      ")
+    print("=" * 65)
     
-    # Generate test predictions
-    y_pred = pipeline.predict(X_test)
+    # Generate predictions on unseen test split
+    predicted_bounties = marine_spam_pipeline.predict(crew_test_messages)
     
-    # Compute quantitative metrics (with 'spam' as positive target label)
-    acc = accuracy_score(y_test, y_pred)
-    prec = precision_score(y_test, y_pred, pos_label="spam")
-    rec = recall_score(y_test, y_pred, pos_label="spam")
-    f1 = f1_score(y_test, y_pred, pos_label="spam")
+    # Compute metrics (positive class = 'spam')
+    accuracy = accuracy_score(crew_test_labels, predicted_bounties)
+    precision = precision_score(crew_test_labels, predicted_bounties, pos_label="spam")
+    recall = recall_score(crew_test_labels, predicted_bounties, pos_label="spam")
+    f1 = f1_score(crew_test_labels, predicted_bounties, pos_label="spam")
     
-    print("\n--- Baseline Performance Summary ---")
-    print(f"  Accuracy Score : {acc:.4f} ({acc * 100:.2f}%)")
-    print(f"  Precision Score: {prec:.4f} ({prec * 100:.2f}%) [Positive Class: 'spam']")
-    print(f"  Recall Score   : {rec:.4f} ({rec * 100:.2f}%) [Positive Class: 'spam']")
-    print(f"  F1-Score       : {f1:.4f} ({f1 * 100:.2f}%) [Positive Class: 'spam']")
+    print("\n--- Marine Battle Performance Summary ---")
+    print(f"  Accuracy Score : {accuracy:.4f} ({accuracy * 100:.2f}%)")
+    print(f"  Spam Precision : {precision:.4f} ({precision * 100:.2f}%) [Target: 'spam']")
+    print(f"  Spam Recall    : {recall:.4f} ({recall * 100:.2f}%) [Target: 'spam']")
+    print(f"  Spam F1-Score  : {f1:.4f} ({f1 * 100:.2f}%) [Target: 'spam']")
     
-    print("\n--- Detailed Classification Report ---")
-    print(classification_report(y_test, y_pred, target_names=["ham", "spam"]))
+    print("\n--- Classification Detail Report ---")
+    print(classification_report(crew_test_labels, predicted_bounties, target_names=["ham", "spam"]))
     
-    print("--- Confusion Matrix ---")
-    cm = confusion_matrix(y_test, y_pred, labels=["ham", "spam"])
+    print("--- Marine Battle Confusion Matrix ---")
+    matrix = confusion_matrix(crew_test_labels, predicted_bounties, labels=["ham", "spam"])
     print(f"                 Predicted 'ham'   Predicted 'spam'")
-    print(f"Actual 'ham'  :       {cm[0][0]:<15} {cm[0][1]:<15}")
-    print(f"Actual 'spam' :       {cm[1][0]:<15} {cm[1][1]:<15}")
-    print("=" * 60)
+    print(f"Actual 'ham'  :       {matrix[0][0]:<15} {matrix[0][1]:<15}")
+    print(f"Actual 'spam' :       {matrix[1][0]:<15} {matrix[1][1]:<15}")
+    print("=" * 65)
 
 
-def save_trained_pipeline(pipeline, model_save_path):
+def save_marine_den_den_mushi(marine_spam_pipeline, saved_pipeline_path):
     """
-    Saves trained scikit-learn pipeline to disk using joblib.
+    Serializes fitted pipeline to disk using joblib.
     """
-    # Ensure models directory exists
-    model_save_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    joblib.dump(pipeline, model_save_path)
-    print(f"\n[SUCCESS] Saved Marine Spam Pipeline to: {model_save_path}\n")
+    saved_pipeline_path.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(marine_spam_pipeline, saved_pipeline_path)
+    print(f"\n[SUCCESS] Marine Spam Pipeline artifact saved to: {saved_pipeline_path}\n")
 
 
 def main():
-    # 1. Resolve directory paths
-    project_root, data_path, models_dir, model_save_path = get_project_paths()
+    # 1. Resolve paths
+    grand_line_root, bounty_dataset_path, marine_hq_models_dir, saved_pipeline_path = locate_grand_line_paths()
     
-    # 2. Load & inspect dataset
-    df = load_and_inspect_dataset(data_path)
+    # 2. Inspect and load data
+    scrolls_df = inspect_bounty_scrolls(bounty_dataset_path)
     
-    # 3. Separate features and target
-    X = df["message"]
-    y = df["label"]
+    # 3. Separate message content and label targets
+    grand_line_messages = scrolls_df["message"]
+    bounty_labels = scrolls_df["label"]
     
-    # 4. Stratified 80/20 train/test split (fixed random_state=42)
-    print("\n[INFO] Performing 80/20 train/test split (stratified by target label)...")
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
+    # 4. Stratified 80/20 train/test split
+    print("\n[INFO] Dividing Grand Line messages into 80% train crew and 20% test crew...")
+    (
+        crew_train_messages,
+        crew_test_messages,
+        crew_train_labels,
+        crew_test_labels
+    ) = train_test_split(
+        grand_line_messages,
+        bounty_labels,
         test_size=0.20,
         random_state=42,
-        stratify=y
+        stratify=bounty_labels
     )
-    print(f"[INFO] Training samples : {len(X_train)}")
-    print(f"[INFO] Testing samples  : {len(X_test)}")
     
-    # 5. Build and train pipeline
-    pipeline = build_and_train_pipeline(X_train, y_train)
+    print(f"[INFO] Training crew count : {len(crew_train_messages)}")
+    print(f"[INFO] Testing crew count  : {len(crew_test_messages)}")
     
-    # 6. Evaluate pipeline on test set
-    evaluate_marine_classifier(pipeline, X_test, y_test)
+    # 5. Train pipeline
+    marine_spam_pipeline = train_marine_fleet_pipeline(crew_train_messages, crew_train_labels)
     
-    # 7. Save pipeline artifact
-    save_trained_pipeline(pipeline, model_save_path)
+    # 6. Evaluate on unseen test crew
+    evaluate_battle_results(marine_spam_pipeline, crew_test_messages, crew_test_labels)
+    
+    # 7. Save trained artifact
+    save_marine_den_den_mushi(marine_spam_pipeline, saved_pipeline_path)
 
 
 if __name__ == "__main__":
