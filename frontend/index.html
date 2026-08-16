@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Line Message Bounty Detector — One Piece Spam Classifier</title>
+    
+    <!-- Meta Descriptions & SEO -->
+    <meta name="description" content="An interactive, One Piece anime-themed SMS spam message classifier built with NLP, TF-IDF vectorization, and Naive Bayes machine learning.">
+    <meta name="keywords" content="Spam Classifier, One Piece, Machine Learning, Scikit-Learn, NLP, TF-IDF, Naive Bayes, AI Portfolio">
+    <meta name="author" content="AI Intern">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom Vanilla CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background Ocean Animated Elements -->
+    <div class="ocean-bg">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="glowing-orb orb-gold"></div>
+        <div class="glowing-orb orb-cyan"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Header Banner Section -->
+        <header class="hero-header">
+            <div class="header-banner-wrapper">
+                <img src="assets/header.png" alt="Grand Line Message Bounty Detector Banner" class="header-img">
+                <div class="header-overlay"></div>
+            </div>
+            
+            <div class="header-content">
+                <div class="bounty-badge">
+                    <span class="badge-icon">🏴‍☠️</span> GRAND LINE MARINE HEADQUARTERS
+                </div>
+                <h1 class="main-title">MESSAGE BOUNTY DETECTOR</h1>
+                <p class="subtitle">SMS Spam Message Classifier powered by NLP & Naive Bayes Machine Learning</p>
+                
+                <div class="tech-stack-pills">
+                    <span class="pill"><i class="icon">🐍</i> Python 3.8+</span>
+                    <span class="pill"><i class="icon">⚙️</i> scikit-learn Pipeline</span>
+                    <span class="pill"><i class="icon">🔤</i> TF-IDF Vectorizer</span>
+                    <span class="pill"><i class="icon">📊</i> Multinomial Naive Bayes</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" role="tablist">
+            <button class="tab-btn active" id="tab-inspector-btn" onclick="switchTab('inspector')">
+                <span class="tab-icon">🔍</span> Live Bounty Inspector
+            </button>
+            <button class="tab-btn" id="tab-metrics-btn" onclick="switchTab('metrics')">
+                <span class="tab-icon">📈</span> Model Performance & Metrics
+            </button>
+            <button class="tab-btn" id="tab-dictionary-btn" onclick="switchTab('dictionary')">
+                <span class="tab-icon">📜</span> One Piece Code Dictionary
+            </button>
+        </nav>
+
+        <!-- SECTION 1: LIVE BOUNTY INSPECTOR -->
+        <main id="section-inspector" class="tab-content active">
+            <div class="inspector-grid">
+                
+                <!-- Left Card: Message Input Panel -->
+                <div class="glass-panel input-panel">
+                    <div class="panel-header">
+                        <h2><span class="header-icon">📜</span> Enter Message Scroll</h2>
+                        <span class="status-indicator live">● Den Den Mushi Active</span>
+                    </div>
+                    
+                    <p class="panel-desc">Paste any SMS text string or select a pre-built sample below to inspect for pirate spam signals.</p>
+
+                    <!-- Sample Prompt Chips -->
+                    <div class="sample-chips-label">Quick Sample Scrolls:</div>
+                    <div class="sample-chips">
+                        <button class="chip chip-ham" onclick="loadSample(1)">
+                            <span class="chip-tag">Crewmate</span> "Hey, are we still meeting..."
+                        </button>
+                        <button class="chip chip-spam" onclick="loadSample(2)">
+                            <span class="chip-tag">Promo Scam</span> "URGENT! You won FREE prize..."
+                        </button>
+                        <button class="chip chip-spam" onclick="loadSample(3)">
+                            <span class="chip-tag">Bounty Scam</span> "Claim your 500k Berries reward..."
+                        </button>
+                        <button class="chip chip-anime" onclick="loadSample(4)">
+                            <span class="chip-tag">One Piece Alert</span> "SECRET MARINE ALERT..."
+                        </button>
+                    </div>
+
+                    <!-- Input Form -->
+                    <div class="input-wrapper">
+                        <textarea id="message-input" placeholder="Type or paste text message scroll here..." rows="5" oninput="updateCharCount()"></textarea>
+                        <div class="textarea-footer">
+                            <span id="char-count">0 characters</span>
+                            <button id="clear-btn" onclick="clearInput()">Clear Scroll</button>
+                        </div>
+                    </div>
+
+                    <button id="inspect-btn" onclick="performInspection()">
+                        <span class="btn-icon">⚡</span> INSPECT BOUNTY SCROLL
+                    </button>
+                </div>
+
+                <!-- Right Card: Live Bounty Result Poster -->
+                <div class="glass-panel result-panel">
+                    <div class="panel-header">
+                        <h2><span class="header-icon">⚓</span> Inspection Result</h2>
+                        <span id="result-status-badge" class="badge-neutral">Awaiting Scroll</span>
+                    </div>
+
+                    <div id="result-container" class="result-placeholder">
+                        <div class="placeholder-icon">🧭</div>
+                        <h3>No Message Inspected Yet</h3>
+                        <p>Type a text message scroll on the left and click <strong>Inspect Bounty Scroll</strong> to reveal the classification poster.</p>
+                    </div>
+
+                    <!-- Dynamic Bounty Card (Hidden by Default) -->
+                    <div id="bounty-poster" class="bounty-poster hidden">
+                        <div class="poster-border">
+                            <div class="poster-header-text">GRAND LINE MARINE OFFICE</div>
+                            
+                            <div id="poster-verdict-icon" class="verdict-icon">🚨</div>
+                            <div id="poster-label-tag" class="poster-label">[MARINE ALERT]</div>
+                            <div id="poster-sub-tag" class="poster-sub">PIRATE SPAM NOTICE DETECTED</div>
+
+                            <div class="score-card">
+                                <div class="score-label">Model Confidence Estimate:</div>
+                                <div class="score-bar-wrapper">
+                                    <div id="confidence-fill" class="confidence-fill" style="width: 0%;"></div>
+                                </div>
+                                <div id="confidence-percentage" class="score-number">0.00%</div>
+                            </div>
+
+                            <div class="token-signals">
+                                <div class="signal-title">Detected Signal Keywords:</div>
+                                <div id="token-chips" class="token-chips"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- SECTION 2: MODEL PERFORMANCE & METRICS -->
+        <section id="section-metrics" class="tab-content">
+            <div class="metrics-grid">
+                
+                <!-- Stat Cards Row -->
+                <div class="stat-card gold-border">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-number">95.96%</div>
+                    <div class="stat-label">Model Accuracy</div>
+                    <div class="stat-sub">1,070 of 1,115 test samples correct</div>
+                </div>
+
+                <div class="stat-card cyan-border">
+                    <div class="stat-icon">🛡️</div>
+                    <div class="stat-number">100.00%</div>
+                    <div class="stat-label">Spam Precision</div>
+                    <div class="stat-sub">0 False Positives on test split</div>
+                </div>
+
+                <div class="stat-card red-border">
+                    <div class="stat-icon">📡</div>
+                    <div class="stat-number">69.80%</div>
+                    <div class="stat-label">Spam Recall</div>
+                    <div class="stat-sub">104 of 149 spam caught</div>
+                </div>
+
+                <div class="stat-card purple-border">
+                    <div class="stat-icon">⚖️</div>
+                    <div class="stat-number">82.21%</div>
+                    <div class="stat-label">Spam F1-Score</div>
+                    <div class="stat-sub">Harmonic mean precision/recall</div>
+                </div>
+
+            </div>
+
+            <!-- Confusion Matrix & Breakdown -->
+            <div class="matrix-container glass-panel">
+                <div class="panel-header">
+                    <h2><span class="header-icon">🧮</span> Confusion Matrix Breakdown (1,115 Test Samples)</h2>
+                    <span class="status-indicator">random_state = 42</span>
+                </div>
+
+                <div class="matrix-layout">
+                    <div class="matrix-grid">
+                        <div class="matrix-header-cell"></div>
+                        <div class="matrix-header-cell">Predicted HAM</div>
+                        <div class="matrix-header-cell">Predicted SPAM</div>
+
+                        <div class="matrix-row-header">Actual HAM</div>
+                        <div class="matrix-cell cell-tn">
+                            <span class="cell-label">True Negative (TN)</span>
+                            <span class="cell-val">966</span>
+                            <span class="cell-desc">Legitimate Crew Messages</span>
+                        </div>
+                        <div class="matrix-cell cell-fp">
+                            <span class="cell-label">False Positive (FP)</span>
+                            <span class="cell-val">0</span>
+                            <span class="cell-desc">Zero False Alarms!</span>
+                        </div>
+
+                        <div class="matrix-row-header">Actual SPAM</div>
+                        <div class="matrix-cell cell-fn">
+                            <span class="cell-label">False Negative (FN)</span>
+                            <span class="cell-val">45</span>
+                            <span class="cell-desc">Missed Spam Notices</span>
+                        </div>
+                        <div class="matrix-cell cell-tp">
+                            <span class="cell-label">True Positive (TP)</span>
+                            <span class="cell-val">104</span>
+                            <span class="cell-desc">Correctly Caught Spam</span>
+                        </div>
+                    </div>
+
+                    <div class="matrix-notes">
+                        <h3><span class="icon">💡</span> Empirical Observations</h3>
+                        <ul>
+                            <li><strong>Zero False Positives:</strong> High precision ensures legitimate messages are never flagged as spam on this test split.</li>
+                            <li><strong>Dataset Audit:</strong> 5,574 physical lines parsed into 5,572 valid records (4,825 ham / 747 spam).</li>
+                            <li><strong>Leakage-Free:</strong> Fitted using `TfidfVectorizer` exclusively inside a scikit-learn `Pipeline`.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: ONE PIECE CODE DICTIONARY -->
+        <section id="section-dictionary" class="tab-content">
+            <div class="glass-panel dictionary-panel">
+                <div class="panel-header">
+                    <h2><span class="header-icon">📜</span> One Piece Code Identifier Mapping Dictionary</h2>
+                    <span class="status-indicator">Technical Translation Guide</span>
+                </div>
+
+                <p class="dictionary-intro">Below is the complete reference dictionary explaining what every One Piece themed code identifier stands for in standard Machine Learning and Python terminology:</p>
+
+                <div class="table-wrapper">
+                    <table class="dictionary-table">
+                        <thead>
+                            <tr>
+                                <th>Themed Code Identifier</th>
+                                <th>Standard Technical / ML Concept</th>
+                                <th>Technical Explanation & Rationale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>grand_line_root</code></td>
+                                <td>Project Root Path</td>
+                                <td>Resolves project root directory dynamically using <code>pathlib.Path</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><code>bounty_dataset_path</code></td>
+                                <td>Dataset File Location</td>
+                                <td>Points to <code>data/SMSSpamCollection</code> raw tab-separated file.</td>
+                            </tr>
+                            <tr>
+                                <td><code>inspect_bounty_scrolls()</code></td>
+                                <td><code>load_and_validate_data()</code></td>
+                                <td>Loads data via pandas, checks nulls, and prints class proportions.</td>
+                            </tr>
+                            <tr>
+                                <td><code>scrolls_df</code></td>
+                                <td><code>pandas.DataFrame</code></td>
+                                <td>Tabular DataFrame storing <code>label</code> and <code>message</code> columns.</td>
+                            </tr>
+                            <tr>
+                                <td><code>devil_fruit_vectorizer</code></td>
+                                <td><code>TfidfVectorizer</code></td>
+                                <td>Converts text into TF-IDF weighted sparse feature matrices.</td>
+                            </tr>
+                            <tr>
+                                <td><code>marine_classifier</code></td>
+                                <td><code>MultinomialNB</code></td>
+                                <td>Multinomial Naive Bayes probabilistic classifier for text counts.</td>
+                            </tr>
+                            <tr>
+                                <td><code>marine_spam_pipeline</code></td>
+                                <td><code>sklearn.pipeline.Pipeline</code></td>
+                                <td>Unified pipeline coupling vectorizer and classifier to prevent leakage.</td>
+                            </tr>
+                            <tr>
+                                <td><code>evaluate_battle_results()</code></td>
+                                <td><code>evaluate_model()</code></td>
+                                <td>Computes Accuracy, Precision, Recall, F1, and Confusion Matrix.</td>
+                            </tr>
+                            <tr>
+                                <td><code>save_marine_den_den_mushi()</code></td>
+                                <td><code>joblib.dump()</code></td>
+                                <td>Serializes trained pipeline artifact to <code>models/spam_message_pipeline.joblib</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><code>[CREW MESSAGE]</code></td>
+                                <td>Legitimate Class (<code>ham</code>)</td>
+                                <td>Safe communication from trusted crewmates.</td>
+                            </tr>
+                            <tr>
+                                <td><code>[MARINE ALERT]</code></td>
+                                <td>Spam Class (<code>spam</code>)</td>
+                                <td>Unwanted promotional scam or pirate bounty notice.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>🏴‍☠️ <strong>Grand Line Message Bounty Detector</strong> — AI Internship Submission Project</p>
+            <p class="sub-footer">Built with HTML5, Vanilla CSS, JavaScript, and scikit-learn ML Pipeline • <a href="https://github.com/hamsidhi/Spam-Email-Classifier" target="_blank" rel="noopener">GitHub Repository</a></p>
+        </footer>
+
+    </div>
+
+    <!-- Application JavaScript Engine -->
+    <script src="app.js"></script>
+</body>
+</html>
