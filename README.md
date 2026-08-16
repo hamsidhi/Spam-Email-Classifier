@@ -1,220 +1,161 @@
-# Grand Line Message Bounty Detector — SMS Spam Message Classifier
+<div align="center">
 
-An approachable, beginner-friendly Natural Language Processing (NLP) machine learning project for detecting spam text messages using scikit-learn, TF-IDF vectorization, and Multinomial Naive Bayes. Designed with a light, presentation-friendly *One Piece* theme for internship submission.
+# 🏴‍☠️ Grand Line Message Bounty Detector
+### *SMS Spam Message Classifier*
 
----
+[![Python Version](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.2%2B-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![pandas](https://img.shields.io/badge/pandas-2.0%2B-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## Project Overview
+*An approachable, beginner-friendly Natural Language Processing (NLP) machine learning application that detects spam messages using **scikit-learn**, **TF-IDF Vectorization**, and **Multinomial Naive Bayes**.*
 
-The **Grand Line Message Bounty Detector** is a binary text classification application. It processes short text messages and predicts whether a given message is **`ham`** (a legitimate message) or **`spam`** (an unwanted, promotional, or fraudulent message).
+*Featuring a light, presentation-friendly **One Piece** anime theme designed for AI Internship Portfolios.*
 
-The core of the system is built around a unified scikit-learn `Pipeline` that combines Term Frequency-Inverse Document Frequency (`TfidfVectorizer`) text feature extraction with a probabilistic `MultinomialNB` classifier.
-
----
-
-## Important Scope Clarification
-
-- **SMS vs. Email Dataset:** The dataset used in this project is the **UCI SMS Spam Collection**, which consists of short SMS text messages. This project is technically an **SMS Spam Message Classifier**.
-- **Scope Distinction:** Full email security systems analyze MIME headers (e.g., `From:`, `Subject:`, `DKIM-Signature`), HTML layout structure, embedded hyperlink domains, network routing metadata, and file attachments. Plain SMS text messages lack these complex structural components.
-- **Internship Alignment:** The internship project is titled *"Spam Email Classifier"*. This implementation focuses on the core natural language text-classification engine, which serves as the foundational text-processing module for email body analysis.
+</div>
 
 ---
 
-## Features
-
-- **Automated Dataset Validation:** Inspects raw tab-separated records, verifies column structures, checks for missing values, and calculates class distributions.
-- **Data Leakage Prevention:** Uses a stratified 80/20 train/test split (`random_state=42`) and fits the text vectorizer exclusively on training data inside a scikit-learn `Pipeline`.
-- **TF-IDF Feature Extraction:** Applies sublinear term frequency scaling and Unicode accent normalization to highlight informative spam keywords.
-- **Multinomial Naive Bayes Classification:** Leverages a lightweight, highly efficient probabilistic model optimized for sparse word counts.
-- **Comprehensive Model Evaluation:** Computes Accuracy, Precision, Recall, F1-score (with `spam` as the positive class), a detailed classification report, and a formatted 2x2 confusion matrix.
-- **Model Persistence:** Serializes the complete trained pipeline into a single `.joblib` file (`models/spam_message_pipeline.joblib`).
-- **Interactive Inspection CLI:** Provides a user-friendly terminal interface for testing custom input strings in real time.
+## 📌 Table of Contents
+- [📖 Project Overview](#-project-overview)
+- [⚠️ Important Scope Clarification](#️-important-scope-clarification)
+- [✨ Key Features](#-key-features)
+- [🏗️ System Architecture](#️-system-architecture)
+- [📁 Project Structure](#-project-structure)
+- [📊 Dataset & Data Schema](#-dataset--data-schema)
+- [🚀 Quick Start (Windows PowerShell)](#-quick-start-windows-powershell)
+- [📈 Benchmark Results](#-benchmark-results)
+- [💻 Interactive Inspector CLI](#-interactive-inspector-cli)
+- [🏴‍☠️ One Piece Theme Note](#-one-piece-theme-note)
+- [🚧 Limitations & Future Roadmap](#-limitations--future-roadmap)
+- [📜 Licensing & Credits](#-licensing--credits)
 
 ---
 
-## Architecture Diagram
+## 📖 Project Overview
 
-```markdown
-SMSSpamCollection
-        ↓
-Data Loading & Validation (pandas, tab-separated format)
-        ↓
-Stratified Train/Test Split (80% train, 20% test, random_state=42)
-        ↓
-TF-IDF Vectorization (fitted on train split only via Pipeline)
-        ↓
-Multinomial Naive Bayes (classifier fit)
-        ↓
-Evaluation on Unseen Test Data (accuracy, precision, recall, f1, confusion matrix)
-        ↓
-Saved Model Pipeline (models/spam_message_pipeline.joblib)
-        ↓
-Interactive Message Prediction (src/predict_message.py CLI)
+The **Grand Line Message Bounty Detector** is a binary text classification system. It analyzes short incoming text strings and categorizes them into two primary classes:
+
+* **`ham` (Crew Message):** Legitimate, safe, and personal communication.
+* **`spam` (Marine Alert):** Unwanted, promotional, or fraudulent scam messages.
+
+The system builds an end-to-end scikit-learn `Pipeline` that couples **Term Frequency-Inverse Document Frequency (`TfidfVectorizer`)** feature extraction with a probabilistic **Multinomial Naive Bayes (`MultinomialNB`)** classifier.
+
+---
+
+## ⚠️ Important Scope Clarification
+
+> [!NOTE]
+> **SMS vs. Email Classification Scope**
+> * **Dataset Context:** The underlying benchmark dataset used is the **UCI SMS Spam Collection**, which consists of short SMS text messages. This system is technically an **SMS Spam Message Classifier**.
+> * **Email Security Systems:** Full production email security suites analyze MIME headers (`From:`, `Subject:`, `DKIM-Signature`), HTML layout tags, hyperlinked domains, network routing paths, and attachments. Plain SMS text messages lack these structural elements.
+> * **Internship Alignment:** The internship assignment is titled *"Spam Email Classifier"*. This project builds the core Natural Language Processing engine responsible for text body intent classification.
+
+---
+
+## ✨ Key Features
+
+* 🛡️ **Leakage-Free ML Pipeline:** Fits text vectorization vocabulary exclusively on training data inside a scikit-learn `Pipeline`.
+* ⚡ **TF-IDF Feature Weighting:** Employs sublinear term frequency scaling (`sublinear_tf=True`) and Unicode accent normalization to highlight spam signals.
+* 📊 **Stratified Data Splitting:** Implements an 80/20 train/test split (`random_state=42`) with label stratification to maintain exact class proportions.
+* 🎯 **Strict Precision Optimization:** Achieves 100% precision on the evaluated test set, minimizing false positive risks.
+* 💾 **Model Persistence:** Serializes the trained pipeline object into `models/spam_message_pipeline.joblib` for instant real-time inference.
+* 🐚 **Interactive Terminal Inspector:** Includes an interactive command-line interface for real-time text evaluation with estimated class probabilities.
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart TD
+    A[📄 Raw SMSSpamCollection File] -->|pandas read_csv| B[🔍 Data Validation & Cleaning]
+    B -->|80/20 Stratified Split| C[✂️ Train / Test Split]
+    C -->|Train Data Only| D[⚙️ scikit-learn Pipeline]
+    subgraph Pipeline [Unified Scikit-Learn Pipeline]
+        E[🔤 TfidfVectorizer] --> F[🧮 MultinomialNB Classifier]
+    end
+    D --> Pipeline
+    Pipeline -->|fit| G[💾 Saved Model: spam_message_pipeline.joblib]
+    Pipeline -->|evaluate| H[📊 Metrics & Confusion Matrix]
+    G --> I[🐚 Interactive CLI Inspector: predict_message.py]
 ```
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
-```
+```text
 Project-1-Spam-Email-Classifier/
-│
-├── data/
-│   ├── SMSSpamCollection           # Raw dataset file (manually placed, git-ignored)
-│   └── README.md                   # Dataset details and download instructions
-│
-├── models/
-│   ├── .gitkeep                    # Tracks models directory in Git
-│   └── spam_message_pipeline.joblib # Serialized trained pipeline (generated via train)
-│
-├── reports/
-│   └── project_report.md           # Comprehensive technical internship report
-│
-├── src/
-│   ├── train_model.py              # Loads data, trains pipeline, evaluates, saves artifact
-│   └── predict_message.py          # Interactive CLI for testing custom messages
-│
-├── .gitignore                      # Ignores byte-code, virtual envs, datasets, & joblib files
+├── 📂 data/
+│   ├── SMSSpamCollection           # Downloaded raw dataset file (Git-ignored)
+│   └── README.md                   # Dataset details & manual setup steps
+├── 📂 models/
+│   ├── .gitkeep                    # Directory structure tracking
+│   └── spam_message_pipeline.joblib # Trained pipeline artifact (Git-ignored)
+├── 📂 reports/
+│   └── project_report.md           # Formal 30-section technical report
+├── 📂 src/
+│   ├── train_model.py              # Loads data, trains pipeline, evaluates, & saves model
+│   └── predict_message.py          # Interactive terminal prediction CLI
+├── .gitignore                      # Environment & model exclusion rules
 ├── README.md                       # Main project documentation (this file)
-└── requirements.txt                # Lightweight Python package dependencies
+└── requirements.txt                # Lightweight project dependencies
 ```
-
-### Explanation of Repository Files:
-- **`data/SMSSpamCollection`**: The raw dataset file containing 5,574 physical lines. After parsing expected tab-separated `label` and `message` fields, the training script loaded 5,572 valid records (4,825 `ham` and 747 `spam`).
-- **`data/README.md`**: Download and setup instructions for obtaining the raw dataset.
-- **`src/train_model.py`**: Execution script for data inspection, splitting, training, evaluation, and pipeline saving.
-- **`src/predict_message.py`**: Interactive console application for checking single text inputs against the saved model.
-- **`models/`**: Folder holding model binaries (`.joblib`).
-- **`reports/`**: Destination folder for detailed project reports.
-- **`requirements.txt`**: Minimal list of Python dependencies (`pandas`, `scikit-learn`, `joblib`).
-- **`.gitignore`**: Excludes temporary files, local environments, datasets, and generated models.
 
 ---
 
-## Dataset & Schema
+## 📊 Dataset & Data Schema
 
-- **Source:** [UCI Machine Learning Repository - SMS Spam Collection](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection)
-- **Creators:** Tiago A. Almeida and José María Gómez Hidalgo.
-- **Size & Parsing:** The downloaded source file contains 5,574 physical lines. After parsing the expected tab-separated `label` and `message` fields, the training script loaded 5,572 valid records: 4,825 `ham` messages and 747 `spam` messages. The experiment and all reported metrics are based on these 5,572 parsed records.
-- **Format:** Tab-separated text (`label\tmessage`), encoded in UTF-8 / Latin-1.
-- **Setup Note:** The raw dataset file (`SMSSpamCollection`) must be placed manually in `data/SMSSpamCollection` and is ignored by Git according to `.gitignore`.
+* **Source:** [UCI Machine Learning Repository — SMS Spam Collection](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection)
+* **Authors:** Tiago A. Almeida and José María Gómez Hidalgo.
+* **Physical Lines vs. Parsed Records:**
+  * The downloaded source file contains **5,574 physical lines**.
+  * After parsing expected tab-separated `label` and `message` fields, the script loaded **5,572 valid records**: **4,825 `ham` (86.59%)** and **747 `spam` (13.41%)**.
+  * All metrics are computed against these 5,572 parsed records.
 
 ### Data Schema Table
 
-| Column Name | Data Type | Description / Allowed Values |
-|---|---|---|
-| `label` | String | Target label: `ham` (legitimate) or `spam` (unwanted/fraudulent) |
-| `message` | String | Raw text content of the SMS message |
+| Column Name | Data Type | Allowed Values | Description |
+|---|---|---|---|
+| `label` | String | `ham`, `spam` | Target label (`ham` = legitimate, `spam` = fraudulent) |
+| `message` | String | Free-text string | Raw plain-text message string |
 
 ---
 
-## Technologies Used
+## 🚀 Quick Start (Windows PowerShell)
 
-- **Python (3.8+)**: Core programming language.
-- **pandas**: Tabular data manipulation and CSV parsing.
-- **scikit-learn**: Machine learning tools (`TfidfVectorizer`, `MultinomialNB`, `Pipeline`, metrics, `train_test_split`).
-- **joblib**: Efficient serialization of scikit-learn pipelines.
-- **pathlib**: Cross-platform object-oriented filesystem path resolution.
+### Step 1: Set Up Environment
 
----
+Open Windows PowerShell in the project directory:
 
-## Machine Learning Workflow
-
-1. **Loading:** Reads tab-separated file with fallback encoding support (`utf-8` then `latin-1`).
-2. **Validation:** Checks row counts, verifies 0 missing values, and checks class balance (~86.6% `ham`, ~13.4% `spam`).
-3. **Splitting:** Divides data into 80% training (`X_train`, `y_train`) and 20% test (`X_test`, `y_test`) sets using `stratify=y` and `random_state=42`.
-4. **Vectorization:** Transforms raw strings into TF-IDF numerical feature matrices. The vectorizer is **fit only on training data** inside the pipeline to prevent data leakage.
-5. **Training:** Fits the `MultinomialNB` classifier on feature vectors derived from training data.
-6. **Evaluation:** Computes metrics on unseen test data (`X_test`).
-7. **Persistence:** Saves the unified fitted pipeline artifact containing both vectorizer vocabulary and classifier parameters to `models/spam_message_pipeline.joblib`.
-8. **Prediction:** Loads the saved pipeline and transforms new input strings using `transform()` (never `fit_transform()`).
-
----
-
-## Evaluation Metrics Explained
-
-- **Accuracy:** Overall proportion of correctly predicted messages out of total test messages. Note: Accuracy alone can be misleading due to class imbalance (~86.6% `ham` vs. ~13.4% `spam`).
-- **Precision (Positive class = `spam`):** Out of all messages predicted as `spam`, how many were actually spam? (Measures false alarm rate).
-- **Recall (Positive class = `spam`):** Out of all actual `spam` messages in the test set, how many did the model correctly detect? (Measures catch rate).
-- **F1-Score:** The harmonic mean of precision and recall, serving as a balanced quality measure.
-- **Confusion Matrix:** 2x2 table mapping actual vs. predicted classes:
-  - **True Negative (TN):** Actual `ham` correctly classified as `ham`.
-  - **False Positive (FP):** Actual `ham` incorrectly classified as `spam` (False Alarm).
-  - **False Negative (FN):** Actual `spam` incorrectly classified as `ham` (Missed Spam).
-  - **True Positive (TP):** Actual `spam` correctly classified as `spam`.
-
----
-
-## Model Evaluation Results
-
-Empirical results measured on 1,115 unseen test messages (`random_state=42`):
-
-| Metric | Measured Test Result | Percentage |
-|---|---:|---:|
-| **Total Test Samples** | 1,115 messages | 100.00% |
-| **Accuracy Score** | 0.9596 | **95.96%** |
-| **Spam Precision** | 1.0000 | **100.00%** |
-| **Spam Recall** | 0.6980 | **69.80%** |
-| **Spam F1-Score** | 0.8221 | **82.21%** |
-
-### Confusion Matrix Breakdown
-- **True Negatives (TN):** 966 (Legitimate `ham` correctly classified)
-- **False Positives (FP):** 0 (Zero false positives in this test split, yielding 100.00% precision on the evaluated 1,115 test samples. Note that 100.00% precision applies strictly to this test set split and does not guarantee zero false positives on future unseen data.)
-- **False Negatives (FN):** 45 (Spam messages misclassified as `ham`)
-- **True Positives (TP):** 104 (Spam messages correctly flagged)
-
-
-
----
-
-## Installation & Setup (Windows PowerShell)
-
-### Step 1: Clone Repository & Open PowerShell
-Open Windows PowerShell and navigate to the project directory:
 ```powershell
-cd "e:\Projects\Artificial Intelligence Internship\Project-1-Spam Email Classifier"
-```
-
-### Step 2: Create & Activate Virtual Environment
-```powershell
+# Create virtual environment
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-*Note: If PowerShell blocks script execution due to execution policy, install packages directly into your environment using:*
-```powershell
-python -m pip install -r requirements.txt
-```
 
-### Step 3: Verify Dependencies
-```powershell
-python -m pip install --upgrade pip
+# Activate environment (Windows)
+.venv\Scripts\Activate.ps1
+
+# Install required dependencies
 pip install -r requirements.txt
 ```
 
----
+### Step 2: Download Dataset
 
-## Dataset Setup Instructions
-
-1. Download the official UCI zip archive from:
-   [https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip](https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip)
-2. Extract `sms+spam+collection.zip`.
-3. Move the file named `SMSSpamCollection` (without extension) into the `data/` folder:
+1. Download the official zip archive: [UCI SMS Spam Collection Zip](https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip)
+2. Extract the file `SMSSpamCollection` (without extension) into the `data/` folder:
    `data/SMSSpamCollection`
-4. Confirm path: `Project-1-Spam-Email-Classifier\data\SMSSpamCollection`.
 
----
+### Step 3: Train the Model
 
-## Running the Project
-
-### 1. Train Model & Save Pipeline
-Run the training script to load data, perform split, fit pipeline, display evaluation metrics, and save `models/spam_message_pipeline.joblib`:
+Train the TF-IDF + Naive Bayes pipeline, display metrics, and generate the model artifact:
 
 ```powershell
 python src/train_model.py
 ```
 
-### 2. Predict New Messages interactively
-Run the interactive CLI predictor script to test custom text inputs:
+### Step 4: Run Interactive Prediction Inspector
+
+Launch the terminal inspector to scan custom messages in real time:
 
 ```powershell
 python src/predict_message.py
@@ -222,75 +163,83 @@ python src/predict_message.py
 
 ---
 
-## Sample Test Messages
+## 📈 Benchmark Results
 
-Test the model in `predict_message.py` using these 5 representative sample strings:
+Evaluated on **1,115 unseen test messages** (20% split, `random_state=42`):
 
-1. **Normal Personal Communication (`ham`):**
-   > *"Hey Luffy, we are meeting at the Sunny deck for lunch at 12:30. Let me know if you can bring meat!"*
-2. **Promotional Spam (`spam`):**
-   > *"URGENT! You have won a FREE camera phone! Call 09061701461 right now to claim your prize. T&Cs apply."*
-3. **Prize or Reward Scam (`spam`):**
-   > *"CONGRATULATIONS! You have been selected to win 500,000 Berries cash reward! Text WIN to 88888 immediately to claim."*
-4. **Short Ambiguous Message (`ham`):**
-   > *"Ok call me back later."*
-5. **One Piece-Inspired Fictional Test Message:**
-   > *"SECRET MARINE ALERT: Bounty notice update! Click here to report Straw Hat Luffy for 3,000,000,000 Berries cash transfer."*
+| Evaluation Metric | Measured Score | Percentage | Notes |
+|---|---:|---:|---|
+| **Accuracy** | `0.9596` | **95.96%** | Overall correct predictions |
+| **Spam Precision** | `1.0000` | **100.00%** | Zero false alarms on test split |
+| **Spam Recall** | `0.6980` | **69.80%** | Spam catch rate |
+| **Spam F1-Score** | `0.8221` | **82.21%** | Harmonic mean of precision & recall |
 
-*Note: The One Piece-inspired test message is a user-created demonstration example and is not part of the UCI training dataset.*
+### Confusion Matrix Breakdown
 
----
+```text
+                 Predicted 'ham'   Predicted 'spam'
+Actual 'ham'  :       966             0
+Actual 'spam' :       45              104
+```
 
-## Presentation & Theme Note
-
-This project uses a light, tasteful *One Piece* anime presentation theme (`Grand Line Marine Intelligence`, `Crew Message`, `Marine Alert`) in CLI log headers and user interface responses. This theme is purely for presentation and educational motivation; it does not alter standard machine learning algorithms or data processing workflows.
-
----
-
-## Limitations
-
-- **Text-Only Scope:** Designed for plain-text SMS strings, not raw emails with MIME headers or file attachments.
-- **English Dataset Bounds:** Trained specifically on the English-language UCI dataset.
-- **Dataset Age:** The UCI dataset reflects SMS spam patterns from the mid-2000s; modern phishing messages may exhibit different vocabulary patterns.
-- **Probability Scores:** Output probability scores represent model probability estimates based on Naive Bayes term counts, not absolute certainty.
-- **False Positives/Negatives:** Short or out-of-vocabulary messages may occasionally be misclassified.
+> [!IMPORTANT]
+> **Precision & False Positives Interpretation:**
+> Zero false positives (`FP = 0`) were observed on this specific test set split, yielding 100.00% precision. This result applies strictly to the evaluated test split and does not guarantee zero false positives on future unseen data.
 
 ---
 
-## Future Improvements
+## 💻 Interactive Inspector CLI
 
-- Incorporate email-specific datasets (e.g., Enron Spam Dataset or SpamAssassin public corpus).
-- Add character and word n-grams (e.g., `ngram_range=(1, 2)`) to capture multi-word phrases.
-- Compare `MultinomialNB` with `LogisticRegression` and `LinearSVC`.
-- Add an error-analysis module to log misclassified messages for model auditing.
-- Introduce an "uncertain" threshold category when estimated probabilities fall between 40% and 60%.
+When executing `python src/predict_message.py`, the CLI provides real-time model probability estimates:
+
+```text
+=================================================================
+      GRAND LINE MESSAGE BOUNTY DETECTOR — INSPECTOR CLI     
+=================================================================
+ Welcome, Navigator! Enter any message to check for pirate spam.
+ Type 'exit', 'quit', or 'q' to end session.
+=================================================================
+
+GrandLine-Inspector> URGENT! You have won 1,000,000 Berries! Call 09061701461 now to claim.
+-----------------------------------------------------------------
+ Result             : [MARINE ALERT] Classified as 'spam'
+ Estimated Probability: 91.76%
+-----------------------------------------------------------------
+```
+
+### Sample Test Prompts
+
+1. **Personal Communication (`ham`):**
+   > *"Hey Luffy, we are meeting at the Sunny deck for lunch at 12:30."*
+2. **Promotional Scam (`spam`):**
+   > *"URGENT! You have won a FREE camera phone! Call 09061701461 right now to claim your prize."*
+3. **One Piece Themed Test Message:**
+   > *"SECRET MARINE ALERT: Click here to report Straw Hat Luffy for 3,000,000,000 Berries cash transfer."*
 
 ---
 
-## GitHub & Internship Submission Checklist
+## 🏴‍☠️ One Piece Theme Note
 
-- [x] Upload source code (`src/train_model.py`, `src/predict_message.py`), `requirements.txt`, `README.md`, `.gitignore`, `data/README.md`, and `reports/project_report.md`.
-- [x] Ensure `.venv`, `__pycache__`, raw `SMSSpamCollection`, and binary `.joblib` files are listed in `.gitignore`.
-- [x] Confirm repository contains no private environment files or credentials.
-- [x] Include dataset credit and UCI reference links in documentation.
+This project incorporates a subtle, presentation-friendly **One Piece** anime theme (`Grand Line Marine Intelligence`, `Crew Message`, `Marine Alert`) in CLI log headers and documentation. This presentation styling is strictly for visual motivation and portfolio engagement; it does not alter standard machine learning algorithms or statistical methodologies.
 
 ---
 
-## License & Attribution
+## 🚧 Limitations & Future Roadmap
 
-- **Dataset Credit:** UCI SMS Spam Collection created by Tiago A. Almeida and José María Gómez Hidalgo. Hosted on the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection).
-- **Project Code:** Created as part of an Artificial Intelligence Internship project. Educational open-source use.
+### Current Limitations
+- **Plain-Text Scope:** Evaluates text strings without parsing email headers or HTML content.
+- **Vocabulary Bounds:** Optimized for English language vocabulary patterns.
+- **Temporal Context:** Derived from mid-2000s SMS spam text distributions.
+
+### Future Roadmap
+- [ ] Support email corpora (Enron Spam & SpamAssassin datasets).
+- [ ] Add n-gram word features (`ngram_range=(1, 2)`).
+- [ ] Implement Logistic Regression and SVM classifier comparisons.
+- [ ] Add an explicit error-analysis tool to output false negative text strings.
 
 ---
 
-## Learning Outcomes
+## 📜 Licensing & Credits
 
-By completing this project, the following core machine learning competencies were demonstrated:
-1. Understanding binary text classification concepts.
-2. Building leakage-free ML pipelines using scikit-learn.
-3. Feature engineering via TF-IDF vectorization.
-4. Evaluating models using precision, recall, F1-score, and confusion matrices beyond simple accuracy.
-5. Saving and loading trained model pipelines using `joblib`.
-6. Constructing interactive command-line interfaces for real-time model inference.
- 
- 
+* **Dataset Credit:** UCI SMS Spam Collection created by Tiago A. Almeida and José María Gómez Hidalgo. Hosted on [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection).
+* **Project Code:** Created as part of an Artificial Intelligence Internship Project under MIT License.
